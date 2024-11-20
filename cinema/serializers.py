@@ -1,49 +1,35 @@
 from rest_framework import serializers
-
-from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession
+from cinema.models import (
+    CinemaHall,
+    Genre,
+    Actor,
+    Movie,
+    MovieSession,
+)
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ("id", "name")
-
-
-class ActorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Actor
-        fields = (
-            "id",
-            "first_name",
-            "last_name",
-            "full_name"
-        )
+        fields = "__all__"
 
 
 class CinemaHallSerializer(serializers.ModelSerializer):
     class Meta:
         model = CinemaHall
-        fields = (
-            "id",
-            "name",
-            "rows",
-            "seats_in_row",
-            "capacity"
-        )
+        fields = ("id", "name", "rows", "seats_in_row", "capacity")
+
+
+class ActorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Actor
+        fields = ("id", "first_name", "last_name", "full_name")
 
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = (
-            "id",
-            "title",
-            "description",
-            "duration",
-            "genres",
-            "actors"
-        )
-        read_only_fields = ("id",)
+        fields = "__all__"
 
 
 class MovieListSerializer(MovieSerializer):
@@ -60,22 +46,17 @@ class MovieListSerializer(MovieSerializer):
 
 
 class MovieRetrieveSerializer(MovieSerializer):
-    genres = GenreSerializer(many=True)
-    actors = ActorSerializer(many=True)
+    genres = GenreSerializer(many=True, read_only=True)
+    actors = ActorSerializer(many=True, read_only=True)
 
 
 class MovieSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieSession
-        fields = (
-            "id",
-            "show_time",
-            "movie",
-            "cinema_hall",
-        )
+        fields = "__all__"
 
 
-class MovieSessionListSerializer(serializers.ModelSerializer):
+class MovieSessionListSerializer(MovieSessionSerializer):
     movie_title = serializers.CharField(
         source="movie.title",
         read_only=True
@@ -96,7 +77,7 @@ class MovieSessionListSerializer(serializers.ModelSerializer):
             "show_time",
             "movie_title",
             "cinema_hall_name",
-            "cinema_hall_capacity"
+            "cinema_hall_capacity",
         )
 
 
